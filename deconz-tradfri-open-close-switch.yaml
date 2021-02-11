@@ -1,7 +1,11 @@
 blueprint:
-  name: deCONZ - IKEA Open/Close Switch
+  name: deCONZ - Cover control with Tradfri open/close remote
   description: |
-    'Control your any smart blind with IKEA Tradfri 2-button switch (Included in the package of smart blinds from IKEA) and deCONZ.'
+    'Control your any smart blind with IKEA Tradfri 2-button switch (Included in the package of smart blinds from IKEA) and deCONZ.
+    
+    Short press on ☼ button will open the cover.
+    Short press on ☰ button will close the cover.
+    Long press on ☼ or ☰  will stop the cover.'
   domain: automation
   input:
     remote:
@@ -17,8 +21,7 @@ blueprint:
       selector:
         entity:
           domain: cover
-mode: single
-max_exceeded: silent
+mode: restart
 trigger:
   - platform: event
     event_type: deconz_event
@@ -37,4 +40,9 @@ action:
           - '{{ event == 2002 }}'
         sequence:
           - service: cover.close_cover
+            entity_id: !input cover
+      - conditions:
+          - '{{ event in [1003, 2003] }}''
+        sequence:
+          - service: cover.stop_cover
             entity_id: !input cover
