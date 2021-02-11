@@ -1,0 +1,40 @@
+blueprint:
+  name: deCONZ - IKEA Open/Close Switch
+  description: |
+    'Control your any smart blind with IKEA Tradfri 2-button switch (Included in the package of smart blinds from IKEA) and deCONZ.'
+  domain: automation
+  input:
+    remote:
+      name: Remote
+      description: IKEA switch to use
+      selector:
+        device:
+          integration: deconz
+          model: TRADFRI open/close remote
+    cover:
+      name: Roller Blind
+      description: Roller blind to control
+      selector:
+        entity:
+          domain: cover
+mode: single
+max_exceeded: silent
+trigger:
+  - platform: event
+    event_type: deconz_event
+    event_data:
+      device_id: !input 'remote'
+action:
+  - variables:
+      event: '{{ trigger.event.data.event }}'
+  - choose:
+      - conditions:
+          - '{{ event == 1002 }}'
+        sequence:
+          - service: cover.open_cover
+            entity_id: !input cover
+      - conditions:
+          - '{{ event == 2002 }}'
+        sequence:
+          - service: cover.close_cover
+            entity_id: !input cover
