@@ -1,4 +1,3 @@
-
 blueprint:
   name: Simple AND circuit
   description: This blueprint is a simple AND circuit with a target device e.g. a lamp and 2 binary sensors. When both binary sensors are on, the device is switched on. When one or both sensors are off, the device is switched off.
