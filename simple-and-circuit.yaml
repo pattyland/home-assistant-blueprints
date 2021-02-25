@@ -1,0 +1,46 @@
+
+blueprint:
+  name: Simple AND circuit
+  description: This blueprint is a simple AND circuit with a target device e.g. a lamp and 2 binary sensors. When both binary sensors are on, the device is switched on. When one or both sensors are off, the device is switched off.
+  domain: automation
+  input:
+    automation_target:
+      name: Automation target
+      description: The target which the automation will turn on and off based on binary sensors.
+      selector:
+        target:
+    first_condition:
+      name: First Condition
+      selector:
+        entity:
+          domain: binary_sensor
+    second_condition:
+      name: Second Condition
+      selector:
+        entity:
+          domain: binary_sensor
+
+mode: restart
+max_exceeded: silent
+
+trigger:
+- platform: state
+  entity_id:
+    - !input first_condition
+    - !input second_condition     
+
+action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: !input first_condition
+        state: 'on'
+      - condition: state
+        entity_id: !input second_condition
+        state: 'on'
+      sequence:
+        - service: homeassistant.turn_on
+          target: !input automation_target
+    default:
+      - service: homeassistant.turn_off
+        target: !input automation_target
